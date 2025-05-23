@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>學生資料列表</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <style>
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to bottom right, #4facfe, #00f2fe);
+      margin: 0;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-top: 40px;
+      margin-bottom: 20px;
+      font-size: 28px;
+      font-weight: 600;
+      color: #222;
+      letter-spacing: 1px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      border-radius: 12px;
+      overflow: hidden;
+      background-color: white;
+    }
+
+    thead {
+      background-color: #1976d2;
+      color: white;
+    }
+
+    th, td {
+      padding: 14px;
+      text-align: center;
+      border-bottom: 1px solid #ddd;
+    }
+
+    tr:hover {
+      background-color: #f1f1f1;
+    }
+
+    .masked {
+      letter-spacing: 2px;
+      color: #999;
+    }
+
+    .btn-show {
+      padding: 4px 8px;
+      margin-left: 8px;
+      font-size: 12px;
+      cursor: pointer;
+      background-color: #eee;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .btn-show:hover {
+      background-color: #ddd;
+    }
+
+    td:last-child {
+      font-style: italic;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>所有學生資料</h2>
+    <table id="student-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>學號</th>
+          <th>密碼</th>
+          <th>姓名</th>
+          <th>Email</th>
+          <th>電話</th>
+          <th>卡號</th>
+        </tr>
+      </thead>
+      <tbody id="table-body">
+        <tr><td colspan="7">載入中...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    fetch('http://127.0.0.1:5000/api/students')
+      .then(response => response.json())
+      .then(data => {
+        const tableBody = document.getElementById('table-body');
+        tableBody.innerHTML = '';
+
+        if (data.status === 'success') {
+          data.data.forEach((student, index) => {
+            const row = document.createElement('tr');
+            const passwordId = `password-${index}`;
+            const btnId = `btn-${index}`;
+
+            row.innerHTML = `
+              <td>${student.id}</td>
+              <td>${student.username}</td>
+              <td>
+                <span id="${passwordId}" class="masked">********</span>
+                <button class="btn-show" onclick="togglePassword('${passwordId}', this, '${student.password}')">顯示</button>
+              </td>
+              <td>${student.name}</td>
+              <td>${student.email}</td>
+              <td>${student.phone}</td>
+              <td>${student.card_num || '（尚未註冊）'}</td>
+            `;
+            tableBody.appendChild(row);
+          });
+        } else {
+          tableBody.innerHTML = `<tr><td colspan="7">讀取失敗：${data.message}</td></tr>`;
+        }
+      })
+      .catch(err => {
+        document.getElementById('table-body').innerHTML =
+          `<tr><td colspan="7">伺服器錯誤，無法讀取資料</td></tr>`;
+        console.error(err);
+      });
+
+    function togglePassword(spanId, button, realPassword) {
+      const span = document.getElementById(spanId);
+      if (span.textContent === '********') {
+        span.textContent = realPassword;
+        span.classList.remove('masked');
+        button.textContent = '隱藏';
+      } else {
+        span.textContent = '********';
+        span.classList.add('masked');
+        button.textContent = '顯示';
+      }
+    }
+  </script>
+</body>
+</html>

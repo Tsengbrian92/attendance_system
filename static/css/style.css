@@ -1,0 +1,108 @@
+/* 全局樣式 */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(to right, #4facfe, #00f2fe);
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* 中心化布局 */
+.center-box {
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 300px;
+}
+
+/* 標題樣式 */
+h1 {
+    margin-bottom: 20px;
+    color: #4facfe;
+}
+
+/* 表單組 */
+.form-group {
+    margin-bottom: 15px;
+}
+#email {
+    width: 100%; /* 設置寬度占滿父容器 */
+}
+
+input[type="text"], input[type="password"], input[type="gmail"] {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    outline: none;
+    box-sizing: border-box;
+    transition: all 0.3s ease-in-out;
+}
+
+input[type="text"]:focus, input[type="password"], input[type="gmail"]:focus {
+    border-color: #4facfe;
+    box-shadow: 0 0 5px rgba(79, 172, 254, 0.5);
+}
+
+/* 按鈕樣式 */
+.primary-btn {
+    background: #4facfe;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+    width: 100%;
+}
+.button-container {
+    display: flex;
+    justify-content: space-between; /* 按鈕之間的空間 */
+    align-items: center; /* 垂直居中 */
+    gap: px; /* 按鈕之間的間距 */
+}
+.text-btn{
+    background: transparent;
+    border: none;
+    color:#055177;
+}
+.text-btn:hover{
+    color: #4facfe;
+}
+.primary-btn:hover {
+    background: #055177;
+}
+
+/* 學生列表 */
+.student-list {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    margin: 20px auto;
+}
+
+.student-list div {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.student-list div:last-child {
+    border-bottom: none;
+}
+
+.student-list label {
+    font-size: 16px;
+    color: #333;
+}

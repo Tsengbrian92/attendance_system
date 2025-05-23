@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>目前開課班級</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #f0f8ff;
+      padding: 30px;
+    }
+    .class-box {
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      padding: 20px;
+      margin: 15px 0;
+      background-color: #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .class-box h3 {
+      margin-top: 0;
+    }
+    .class-box button {
+      margin-top: 10px;
+      padding: 8px 16px;
+      background-color: #1976d2;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h2>目前可點名的班級</h2>
+  <div id="class-list">載入中...</div>
+
+  <script>
+    fetch('http://127.0.0.1:5000/api/active_classes')
+      .then(res => res.json())
+      .then(data => {
+        const list = document.getElementById('class-list');
+        list.innerHTML = '';
+
+        if (data.status === 'success' && data.classes.length > 0) {
+          data.classes.forEach(cls => {
+            const div = document.createElement('div');
+            div.className = 'class-box';
+            div.innerHTML = `
+              <h3>班級代號：${cls.class_code}</h3>
+              <p>上課時間：${cls.class_day} ${cls.start_time} ~ ${cls.end_time}</p>
+              <button onclick="startAttendance('${cls.class_code}')">開始點名</button>
+            `;
+            list.appendChild(div);
+          });
+        } else {
+          list.innerHTML = '<p>目前沒有正在上課的班級。</p>';
+        }
+      });
+
+    function startAttendance(classCode) {
+      window.location.href = `/attendance/start?class=${classCode}`;
+    }
+  </script>
+</body>
+</html>

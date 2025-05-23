@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>創建帳號</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div id="register-page" class="center-box">
+        <h2>創建帳號</h2>
+        <div class="form-group">
+            <input type="text" id="name" placeholder="輸入姓名" />
+        </div>
+        <div class="form-group">
+            <input type="gmail" id="email" placeholder="輸入電子郵件" />
+        </div>
+        <div class="form-group">
+            <input type="text" id="phone" placeholder="輸入手機號碼" />
+        </div>
+        <div class="form-group">
+            <input type="text" id="new-username" placeholder="輸入學號" />
+        </div>
+        <div class="form-group">
+            <input type="password" id="new-password" placeholder="輸入密碼" />
+        </div>
+        <div class="form-group">
+            <input type="password" id="check-password" placeholder="再次輸入密碼" />
+        </div>
+        <button id="create-account-button" class="primary-btn">創建帳號</button>
+        <button id="back-to-login" class="text-btn">返回登入</button>
+    </div>
+    <script src="/static/script/register.js"></script>
+    <script>
+        document.getElementById('back-to-login').addEventListener('click', () => {
+        window.location.href = 'login.html';
+    });
+    </script>
+
+</body>
+</html>

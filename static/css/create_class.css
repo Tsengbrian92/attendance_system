@@ -1,0 +1,102 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(to bottom, #4facfe, #00f2fe);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.container {
+    background-color: white;
+    border-radius: 15px;
+    padding: 30px 20px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    width: 450px;
+}
+
+.container h1 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #333;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #333;
+    font-weight: bold;
+}
+
+.form-group input, .form-group select {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.form-group input:focus, .form-group select:focus {
+    outline: none;
+    border-color: #4facfe;
+}
+
+.days-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* 調整每個項目之間的間距 */
+    justify-content: center; /* 水平居中 */
+}
+
+.days-container label {
+    font-size: 16px;
+    color: #333;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px; /* 控制複選框與文字之間的距離 */
+}
+
+.days-container input {
+    transform: scale(1.2);
+}
+
+
+.button {
+    width: 100%;
+    padding: 15px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: transform 0.2s, background-color 0.3s;
+}
+
+.button:hover {
+    transform: scale(1.05);
+    background-color: #3e8e41;
+}
+
+small {
+    color: #666;
+    font-size: 12px;
+}
+.text-btn{
+    background: transparent;
+    border: none;
+    color:#055177;
+}
+.text-btn:hover{
+    color: #4facfe;
+}

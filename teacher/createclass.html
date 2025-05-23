@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>建立開課班級</title>
+    <link rel="stylesheet" href="/static/css/create_class.css">
+</head>
+<body>
+    <div class="container">
+        <h1>建立開課班級</h1>
+        <form id="create-class-form">
+            <div class="form-group">
+                <label for="class_code">班級代碼</label>
+                <input type="text" id="class_code" name="class_code" placeholder="例如：C001" required>
+            </div>
+            <div class="form-group">
+                <label for="class_name">班級名稱</label>
+                <input type="text" id="class_name" name="class_name" placeholder="例如：一年級數學班" required>
+            </div>
+            <div class="form-group">
+                <label for="course_name">課程名稱</label>
+                <input type="text" id="course_name" name="course_name" placeholder="例如：數學" required>
+            </div>
+            <div class="form-group">
+                <label for="teacher_name">教師姓名</label>
+                <input type="text" id="teacher_name" name="teacher_name" placeholder="例如：王大明" required>
+            </div>
+            <div class="form-group">
+                <label for="students_count">最大學生人數</label>
+                <input type="number" id="students_count" name="students_count" placeholder="例如：25" required>
+            </div>
+            <div class="form-group">
+                <label for="students_count">開課堂數</label>
+                <input type="number" id="class_count" name="class_count" placeholder="例如：30" required>
+            </div>
+            <div class="form-group">
+                <label for="start_date">開課日期</label>
+                <input type="date" id="start_date">
+            </div>
+            
+            <div class="form-group">
+                <label>上課星期與時間</label>
+                <div class="days-container">
+                    <label><input type="checkbox" value="Monday" class="class-day"> 一</label>
+                    <label><input type="checkbox" value="Tuesday" class="class-day"> 二</label>
+                    <label><input type="checkbox" value="Wednesday" class="class-day"> 三</label>
+                    <label><input type="checkbox" value="Thursday" class="class-day"> 四</label>
+                    <label><input type="checkbox" value="Friday" class="class-day"> 五</label>
+                    <label><input type="checkbox" value="Saturday" class="class-day"> 六</label>
+                    <label><input type="checkbox" value="Sunday" class="class-day"> 日</label>
+                </div>
+                <div id="time-inputs-container"></div>
+            </div>
+            <button type="submit" class="button primary-button">建立班級</button>
+        </form>
+    </div>
+    <script src="/static/script/teacher_verify.js"></script>
+    <script src="/static/script/create_class.js"></script>
+    <script>
+        document.getElementById('back-to-login').addEventListener('click', () => {
+        window.location.href = 'home.html';
+    });
+    </script>
+</body>
+</html>

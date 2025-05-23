@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>班級詳情</title>
+    <link rel="stylesheet" href="/static/css/solo_class_info.css">
+</head>
+<body>
+
+    <div class="container">
+        <div>
+            <button class="btn btn-secondary" onclick="goBack()">返回班級列表</button>
+            <button class="btn btn-danger" onclick="deleteClass()">刪除班級</button>
+        </div>
+        <h1 id="class-name">班級名稱</h1>
+            
+        
+        <p>教師: <span id="teacher-name"></span></p>
+        <p>開課日期: <span id="start-date"></span></p>
+        <p>結束日期: <span id="end-date"></span></p>
+        <p>學生人數: <span id="students-count"></span></p>
+        <p>最多收取學生: <span id="max-students"></span></p>
+
+        <div class="student-section">
+            <h2>學生清單</h2>
+            <button class="btn btn-primary" onclick="editStudents()">編輯</button>
+        </div>
+        
+        <div id="student-list">
+            <!-- 學生清單會動態生成 -->
+        </div>
+
+    </div>
+    <script src="/static/script/teacher_verify.js"></script>
+    <script src="/static/script/solo_class_info.js"></script>
+</body>
+</html>

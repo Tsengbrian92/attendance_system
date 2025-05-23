@@ -1,0 +1,109 @@
+/* 基本樣式 */
+body {
+    background: linear-gradient(135deg, #a2d4f4, #c1f1e0); /* 漸層背景 */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+/* 標題 */
+h1 {
+    text-align: center;
+    margin-top: 5px;
+    color: #333;
+    font-size: 36px;
+    font-weight: 600;
+}
+
+/* 按鈕 */
+button {
+    background-color: #28a745; /* 綠色按鈕 */
+    color: white;
+    border: none;
+    padding: 5px 7px;
+    margin: 10px;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    background-color: #218838;
+}
+
+/* 藍色按鈕 */
+.btn-primary {
+    background-color: #007bff;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+.btn-danger {
+    background-color: rgb(228, 33, 72);
+}
+.btn-danger:hover {
+    background-color: rgb(243, 49, 88);
+}
+/* 返回按鈕樣式 */
+.return-button {
+    background-color: #17a2b8; /* 淺藍按鈕 */
+    color: white;
+}
+
+.return-button:hover {
+    background-color: #138496;
+}
+
+/* 班級卡片 */
+.class-card {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin: 20px auto;
+    max-width: 400px;
+}
+
+.class-card h3 {
+    color: #333;
+    font-size: 24px;
+    margin-top: 0;
+}
+
+/* 卡片內文 */
+.class-card p {
+    margin: 8px 0;
+    font-size: 16px;
+}
+
+/* 按鈕群組 */
+.button-group {
+    display: flex;
+    justify-content: space-around;
+}
+
+/* 調整容器樣式 */
+.container {
+    max-width: 800px;
+    margin: 50px auto;
+    background-color: white;
+    border-radius: 15px;
+    padding: 40px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+.student-section {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* 控制標題與按鈕的距離 */
+}
+
+.student-section h2 {
+    margin: 0; /* 移除標題的預設外邊距 */
+}
+
+.student-section .btn {
+    padding: 5px 10px;
+}

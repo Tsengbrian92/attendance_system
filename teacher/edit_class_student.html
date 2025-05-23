@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>編輯學生</title>
+  <link rel="stylesheet" href="/static/css/edit_class_student.css">
+</head>
+<body>
+  <div class="container">
+    <h1>編輯學生</h1>
+    <div id="student-list"></div>
+    <div class="edit-students-container">
+        <div class="class-students">
+            <h2>班級學生</h2>
+            <ul id="class-students-list"></ul>
+        </div>
+        <div class="non-class-students">
+            <h2>其他學生</h2>
+            <ul id="non-class-students-list"></ul>
+        </div>
+    </div>
+    <div class="buttons">
+      <button class="btn btn-success" onclick="saveChanges()">儲存變更</button>
+      <button class="btn btn-secondary" onclick="cancelEdit()">取消</button>
+    </div>
+  </div>
+  <script src="/static/script/teacher_verify.js"></script>
+  <script src="/static/script/edit_class_student.js"></script>
+</body>
+</html>
