@@ -15,7 +15,7 @@ async function teacherLogin() {
     loginButton.disabled = true;
 
     try {
-        const response = await fetch('http://127.0.0.1:5000/api/t_login', {
+        const response = await fetch('http://26.8.220.101:5000/api/t_login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, password })

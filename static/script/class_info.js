@@ -1,7 +1,7 @@
 // 從後端獲取班級列表
 async function fetchClassList() {
     try {
-        const response = await fetch("http://127.0.0.1:5000/api/get-classes"); // 替換為後端 API 的 URL
+        const response = await fetch("http://26.8.220.101:5000/api/get-classes"); // 替換為後端 API 的 URL
         if (!response.ok) {
             throw new Error("無法獲取班級資料，請稍後再試！");
         }

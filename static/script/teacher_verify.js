@@ -7,7 +7,7 @@ async function verifyToken() {
     
     try {
         // 向後端驗證 Token 是否有效
-        const response = await fetch('http://127.0.0.1:5000/api/teacher/verify', {
+        const response = await fetch('http://26.8.220.101:5000/api/teacher/verify', {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${accessToken}`

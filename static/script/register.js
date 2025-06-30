@@ -5,7 +5,7 @@ document.getElementById('read-card-button').addEventListener('click', async () =
     statusDisplay.style.color = "black";
 
     try {
-        const response = await fetch('http://127.0.0.1:5000/get_card_num');
+        const response = await fetch('http://26.8.220.101:5000/get_card_num');
         const data = await response.json();
         if (data.status === "success") {
             document.getElementById('card-num').value = data.card_num;
@@ -48,7 +48,7 @@ document.getElementById('create-account-button').addEventListener('click', () =>
         return;
     }
 
-    fetch('http://127.0.0.1:5000/api/register', {
+    fetch('http://26.8.220.101:5000/api/register', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

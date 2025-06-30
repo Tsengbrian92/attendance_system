@@ -160,7 +160,7 @@
       const studentId = document.getElementById('student-id').value.trim();
       if (!studentId) return alert("請輸入學號");
 
-      fetch('http://127.0.0.1:5000/attendance/manual', {
+      fetch('http://26.8.220.101:5000/attendance/manual', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ student_id: studentId })
@@ -177,7 +177,7 @@
 
     function readCard() {
       document.getElementById('result-message').textContent = "等待刷卡中...";
-      fetch('http://127.0.0.1:5000/attendance/card')
+      fetch('http://26.8.220.101:5000/attendance/card')
         .then(res => res.json())
         .then(data => {
           if (data.status === "success") {
@@ -194,7 +194,7 @@
     }
 
     function loadStudentAttendance() {
-      fetch('http://127.0.0.1:5000/api/students_attendance_today')
+      fetch('http://26.8.220.101:5000/api/students_attendance_today')
         .then(res => res.json())
         .then(data => {
           const tbody = document.getElementById('student-table-body');

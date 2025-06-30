@@ -5,7 +5,7 @@ app = Flask(__name__)
 
 # MySQL 連接資訊
 db_config = {
-    "host": "127.0.0.1",
+    "host": "26.8.220.101",
     "user": "root",
     "password": "Aa0901155900",  # 替換為你的 MySQL 密碼
     "database": "studentif"   # 替換為你的資料庫名稱

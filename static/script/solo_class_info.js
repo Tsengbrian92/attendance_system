@@ -14,7 +14,7 @@ async function fetchClassInfo() {
     }
 
     try {
-        const response = await fetch(`http://127.0.0.1:5000/api/get-class-info?classId=${classId}`);
+        const response = await fetch(`http://26.8.220.101:5000/api/get-class-info?classId=${classId}`);
         if (!response.ok) {
             throw new Error("無法獲取班級資訊");
             
@@ -49,7 +49,7 @@ async function fetchStudents() {
     }
 
     try {
-        const response = await fetch(`http://127.0.0.1:5000/api/get-students?classId=${classId}`);
+        const response = await fetch(`http://26.8.220.101:5000/api/get-students?classId=${classId}`);
         if (!response.ok) {
             throw new Error("無法獲取學生清單");
         }
