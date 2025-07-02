@@ -94,9 +94,28 @@ function editStudents() {
 
 
 function deleteClass() {
-    if (confirm('確定刪除這個班級嗎？')) {
-        alert('班級已刪除');
-        // 可呼叫後端 API 刪除班級
+    const classId = getClassIdFromUrl();
+    if (confirm('確定要刪除這個班級嗎？')) {
+        fetch("http://26.8.220.101:5000/delete_class", {
+    method: 'DELETE',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ class_id: classId })
+})
+.then(response => response.json())
+.then(data => {
+    if (data.status === 'success') {
+        alert("✅ 班級刪除成功");
+        window.location.href = 'class_info.html';
+    } else {
+        alert("❌ 刪除失敗：" + data.message);
+    }
+})
+.catch(error => {
+    console.error('❌ 呼叫 API 時發生錯誤：', error);
+    alert("❌ 刪除失敗，請稍後再試");
+});
     }
 }
 

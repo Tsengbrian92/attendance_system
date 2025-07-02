@@ -108,8 +108,58 @@ def get_max_students():
             cursor.close()
         if connection:
             connection.close()
+@app.route('/test/<classId>', methods=['GET', 'POST', 'DELETE'])
+def test():
+    if request.method == 'GET':
+        print("收到 GET 測試請求")
+        return jsonify({"status": "success", "message": "GET 測試 API 正常運作"}), 200
 
-   
+    elif request.method == 'POST':
+        data = request.get_json()
+        print(f"收到 POST 測試資料：{data}")
+        return jsonify({"status": "success", "message": "已收到 POST 測試資料", "data": data}), 200
+
+    elif request.method == 'DELETE':
+        print("收到 DELETE 測試請求")
+        return jsonify({"status": "success", "message": "DELETE 測試 API 正常運作"}), 200
+
+
+@app.route('/delete_class', methods=['DELETE'])
+def delete_class():
+    try:
+        data = request.get_json()
+        class_id = data.get("class_id")
+        if not class_id:
+            return jsonify({"status": "error", "message": "未提供 class_id"}), 400
+
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor()
+
+        # 檢查班級是否存在
+        cursor.execute("SELECT * FROM classes WHERE class_code = %s", (class_id,))
+        result = cursor.fetchone()
+        if not result:
+            return jsonify({"status": "error", "message": f"查無此班級{class_id}"}), 404
+
+        # 執行刪除
+        cursor.execute("DELETE FROM classes WHERE class_code = %s", (class_id,))
+        cursor.execute("DELETE FROM class_schedule WHERE class_code = %s", (class_id,))
+        conn.commit()
+
+        return jsonify({"status": "success", "message": f"班級 {class_id} 已刪除"}), 200
+
+    except mysql.connector.Error as e:
+        return jsonify({"status": "error", "message": f"資料庫錯誤: {str(e)}"}), 500
+
+    except Exception as e:
+        return jsonify({"status": "error", "message": f"伺服器錯誤: {str(e)}"}), 500
+
+    finally:
+        if 'cursor' in locals():
+            cursor.close()
+        if 'conn' in locals():
+            conn.close()  
+            
 @app.route('/api/register', methods=['POST'])
 def register():
     data = request.json
