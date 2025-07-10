@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>點名系統</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div id="login-page" class="center-box">
+        <h1>補習班點名系統</h1>
+        <div class="form-group">
+            <input type="text" id="username" placeholder="帳號(學生為學號)" />
+        </div>
+        <div class="form-group">
+            <input type="password" id="password" placeholder="密碼" />
+        </div>
+        <button id="login-button" class="primary-btn">登入</button>
+        <div class="button-container">
+            <button id="student-register-button" class="text-btn">學生創建帳號</button>
+            <button id="teacher-register-button" class="text-btn">老師創建帳號</button>
+            <button id="forget-button" class="text-btn">忘記密碼</button>
+        </div>
+        <script>
+            document.getElementById('student-register-button').addEventListener('click', () => {
+                // 跳轉到學生註冊頁面
+                window.location.href = '/student/register.html';
+            });
+            document.getElementById('teacher-register-button').addEventListener('click', () => {
+                // 跳轉到老師註冊頁面
+                window.location.href = '/teacher/register.html';
+            });
+        </script>
+
+    </div>
+
+    <script src="/static/script/script.js"></script>
+</body>
+
+
+</html>
