@@ -58,12 +58,12 @@ function renderclassStudents(listId, students) {
 
     students.forEach(student => {
         const li = document.createElement('li');
-        li.textContent = `${student.student_id} - ${student.student_name}`;
+        li.textContent = `${student.student_id} - ${student.name}`;
         li.dataset.studentId = student.student_id;
 
         const removeButton = document.createElement('button');
         removeButton.textContent = '移除';
-        removeButton.onclick = () => removeFromClass(student.student_id, student.student_name, student.student_email, student.student_phone);
+        removeButton.onclick = () => removeFromClass(student.student_id, student.name, student.email, student.phone);
         removeButton.id = 'removeButton';
         li.appendChild(removeButton);
 
@@ -98,19 +98,19 @@ async function addToClass(studentId, studentName, studentEmail, studentPhone) {
     }
 
     // 新增學生到待加入陣列
-    addedStudents.push({ username: studentId, name: studentName, email: studentEmail, phone: studentPhone });
+    addedStudents.push({ student_id: studentId, name: studentName, email: studentEmail, phone: studentPhone });
 
     // **插入到班級學生清單最前面**
     classStudentsData.unshift({
         student_id: studentId,
-        student_name: studentName,
-        student_email: studentEmail,
-        student_phone: studentPhone
+        name: studentName,
+        email: studentEmail,
+        phone: studentPhone
     });
 
     // **從非班級學生清單移除**
     removeStudentFromList(studentId, nonClassStudentsData);
-
+    removeStudentFromList(studentId, removedStudents);
     console.log("待儲存學生資料：", addedStudents);
     renderclassStudents('class-students-list', classStudentsData);
     renderStudents('non-class-students-list', nonClassStudentsData);
@@ -128,19 +128,19 @@ async function removeFromClass(studentId, studentName, studentEmail, studentPhon
     if (!student) return;
 
     // **加入待刪除陣列**
-    removedStudents.push(student);
+    removedStudents.push({ student_id: studentId, name: studentName, email: studentEmail, phone: studentPhone });
 
     // **插入到非班級學生清單最前面**
     nonClassStudentsData.unshift({
         student_id: studentId,
-        student_name: studentName,
-        student_email: studentEmail,
-        student_phone: studentPhone
+        name: studentName,
+        email: studentEmail,
+        phone: studentPhone
     });
 
     // **從班級學生名單中移除**
     removeStudentFromList(studentId, classStudentsData);
-
+    removeStudentFromList(studentId, addedStudents);
     console.log("待刪除學生資料：", removedStudents);
     renderclassStudents('class-students-list', classStudentsData);
     renderStudents('non-class-students-list', nonClassStudentsData);

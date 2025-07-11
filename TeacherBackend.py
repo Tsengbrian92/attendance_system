@@ -136,6 +136,10 @@ def delete_class():
         cursor = conn.cursor()
 
         # 檢查班級是否存在
+        table_name1 = f"class_{class_id}_students" 
+        table_name2 = f"{class_id}_attendance"
+        cursor.execute(f"DROP TABLE IF EXISTS `{table_name1}`")
+        cursor.execute(f"DROP TABLE IF EXISTS `{table_name2}`")
         cursor.execute("SELECT * FROM classes WHERE class_code = %s", (class_id,))
         result = cursor.fetchone()
         if not result:
@@ -414,7 +418,10 @@ def get_class_students():
         query = f"SELECT student_id, student_name, student_email, student_phone FROM class_{class_code}_students"
         cursor.execute(query)
         students = cursor.fetchall()
-
+        for student in students:
+            student["name"] = student.pop("student_name")
+            student["email"] = student.pop("student_email")
+            student["phone"] = student.pop("student_phone")
         return jsonify(students), 200
 
     except mysql.connector.Error as err:
@@ -480,7 +487,7 @@ def update_class_students():
 
         # **1️⃣ 處理新增的學生**
         for student in added_students:
-            student_id = student['username']
+            student_id = student['student_id']
 
             # 檢查是否已經在班級學生表
             cursor.execute(f"SELECT * FROM class_{class_code}_students WHERE student_id = %s", (student_id,))
@@ -508,7 +515,7 @@ def update_class_students():
 
         # **2️⃣ 處理刪除的學生**
         for student in removed_students:
-            student_id = student['username']
+            student_id = student['student_id']
 
             # **從班級學生表刪除**
             delete_query = f"DELETE FROM class_{class_code}_students WHERE student_id = %s"
@@ -793,7 +800,34 @@ def get_card_num():
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
+@app.route('/get-attendance-classes', methods=['GET'])
+def get_attendance_classes():
+    now = datetime.now()
+    now_time_str = now.strftime('%H:%M:%S')
+    future_time_str = (now + timedelta(minutes=15)).strftime('%H:%M:%S')
+    today_day = now.strftime('%A')
 
+    try:
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor(dictionary=True)
 
+        query = """
+            SELECT * FROM class_schedule
+            WHERE class_day = %s
+              AND start_time <= %s
+              AND end_time > %s
+        """
+        cursor.execute(query, (today_day, future_time_str, now_time_str))
+        classes = cursor.fetchall()
+
+        return jsonify(classes), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+    finally:
+        if 'cursor' in locals(): cursor.close()
+        if 'conn' in locals(): conn.close()
+        
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
