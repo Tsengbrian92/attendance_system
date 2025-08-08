@@ -368,6 +368,7 @@ def get_class_info():
 @app.route('/api/students', methods=['GET'])
 def api_students():
     try:
+        
         connection = mysql.connector.connect(**db_config)
         cursor = connection.cursor(dictionary=True)
         cursor.execute("SELECT * FROM account")
