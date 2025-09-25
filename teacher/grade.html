@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>成績查詢</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        .exam-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 15px 0;
+            justify-content: center;
+        }
+        #exam-title {
+            text-align: center;
+            font-size: 20px;
+            margin-top: 15px;
+            font-weight: bold;
+            display: none; /* 預設不顯示 */
+        }
+    </style>
+</head>
+<body>
+    <div id="grades-page" class="center-box">
+        <h1>成績查詢</h1>
+
+        <!-- 下拉式選單 + 新增小考按鈕 -->
+        <div class="exam-controls">
+            <label for="exam-select">選擇考試：</label>
+            <select id="exam-select">
+                <option value="">請選擇</option>
+            </select>
+            
+        </div>
+
+        <div>
+            <button id="add-exam-btn" class="primary-btn">➕ 新增小考</button>
+        </div>
+        <!-- 小考標題 -->
+        <div id="exam-title"></div>
+
+        <!-- 成績表 -->
+        <table border="1" cellpadding="10" cellspacing="0" style="margin-top:20px; width:100%; text-align:center;">
+            <thead>
+                <tr>
+                    <th>學號</th>
+                    <th>姓名</th>
+                    <th>分數</th>
+                </tr>
+            </thead>
+            <tbody id="grades-table-body">
+                <tr><td colspan="3">請先選擇考試</td></tr>
+            </tbody>
+        </table>
+
+        <!-- 儲存成績按鈕（預設隱藏） -->
+        <div style="text-align:center; margin-top:20px;">
+            <button id="save-exam-btn" class="primary-btn" style="display:none;">💾 儲存成績</button>
+        </div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const classId = urlParams.get("classId");
+
+        const examSelect = document.getElementById("exam-select");
+        const gradesTableBody = document.getElementById("grades-table-body");
+        const addExamBtn = document.getElementById("add-exam-btn");
+        const saveExamBtn = document.getElementById("save-exam-btn");
+        const examControls = document.querySelector(".exam-controls");
+        const examTitle = document.getElementById("exam-title");
+
+        let currentExamName = null;
+
+        // 取得考試清單
+        if (classId) {
+            fetch(`http://26.8.220.101:5000/api/get-exams?classId=${classId}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.exams && data.exams.length > 0) {
+                        data.exams.forEach(exam => {
+                            const option = document.createElement("option");
+                            option.value = exam;
+                            option.textContent = exam;
+                            examSelect.appendChild(option);
+                        });
+                    }
+                })
+                .catch(err => console.error("Error:", err));
+        }
+
+        // 選擇考試 → 顯示成績
+        examSelect.addEventListener("change", () => {
+            const exam = examSelect.value;
+            if (!exam) {
+                gradesTableBody.innerHTML = "<tr><td colspan='3'>請先選擇考試</td></tr>";
+                saveExamBtn.style.display = "none";
+                examTitle.style.display = "none";
+                return;
+            }
+
+            fetch(`http://26.8.220.101:5000/api/get-exam-grades?classId=${classId}&exam=${exam}`)
+                .then(res => res.json())
+                .then(data => {
+                    gradesTableBody.innerHTML = "";
+                    if (data.grades && data.grades.length > 0) {
+                        data.grades.forEach(row => {
+                            const tr = document.createElement("tr");
+                            tr.innerHTML = `
+                                <td>${row.student_id}</td>
+                                <td>${row.student_name || "-"}</td>
+                                <td contenteditable="true" 
+                                    onblur="updateScore('${row.student_id}', '${exam}', this.innerText)">
+                                    ${row.score ?? "-"}
+                                </td>
+                            `;
+                            gradesTableBody.appendChild(tr);
+                        });
+                        saveExamBtn.style.display = "none";
+                        examTitle.style.display = "block";
+                        examTitle.innerText = "考試名稱：" + exam;
+                    } else {
+                        gradesTableBody.innerHTML = "<tr><td colspan='3'>暫無成績資料</td></tr>";
+                        saveExamBtn.style.display = "none";
+                    }
+                })
+                .catch(err => {
+                    console.error("Error:", err);
+                    gradesTableBody.innerHTML = "<tr><td colspan='3'>⚠️ 載入失敗</td></tr>";
+                });
+        });
+
+        // 更新分數到後端
+        function updateScore(studentId, examName, newScore) {
+            fetch(`http://26.8.220.101:5000/api/update-grade`, {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({
+                    classId: classId,
+                    student_id: studentId,
+                    exam_name: examName,
+                    score: newScore
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                console.log(data.message);
+            })
+            .catch(err => {
+                console.error("更新失敗:", err);
+                alert("成績更新失敗，請稍後再試！");
+            });
+        }
+
+        // 顯示新增小考（重用表格）
+        addExamBtn.addEventListener("click", () => {
+            const examName = prompt("請輸入考試名稱：");
+            if (!examName) {
+                alert("必須輸入考試名稱！");
+                return;
+            }
+            currentExamName = examName;
+
+            // 隱藏選擇考試和新增小考
+            examControls.style.display = "none";
+
+            // 顯示小考標題
+            examTitle.style.display = "block";
+            examTitle.innerText = "新增考試：" + currentExamName;
+
+            gradesTableBody.innerHTML = "<tr><td colspan='3'>載入中...</td></tr>";
+
+            fetch(`http://26.8.220.101:5000/api/get-students?classId=${classId}`)
+                .then(res => res.json())
+                .then(data => {
+                    gradesTableBody.innerHTML = "";
+                    if (data.students && data.students.length > 0) {
+                        data.students.forEach(stu => {
+                            const tr = document.createElement("tr");
+                            tr.innerHTML = `
+                                <td>${stu.student_id}</td>
+                                <td>${stu.student_name}</td>
+                                <td contenteditable="true"></td>
+                            `;
+                            gradesTableBody.appendChild(tr);
+                        });
+                        saveExamBtn.style.display = "inline-block";
+                    } else {
+                        gradesTableBody.innerHTML = "<tr><td colspan='3'>沒有學生資料</td></tr>";
+                    }
+                });
+        });
+
+        // 儲存新小考成績
+        saveExamBtn.addEventListener("click", () => {
+            if (!currentExamName) {
+                alert("沒有指定考試名稱！");
+                return;
+            }
+
+            const grades = [];
+            gradesTableBody.querySelectorAll("tr").forEach(tr => {
+                const tds = tr.querySelectorAll("td");
+                if (tds.length === 3) {
+                    grades.push({
+                        student_id: tds[0].innerText,
+                        student_name: tds[1].innerText,
+                        score: tds[2].innerText || 0
+                    });
+                }
+            });
+
+            fetch("http://26.8.220.101:5000/api/add-exam", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({
+                    classId: classId,
+                    exam_name: currentExamName,
+                    grades: grades
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                alert(data.message);
+                location.reload();
+            })
+            .catch(err => {
+                console.error("Error:", err);
+                alert("儲存失敗！");
+            });
+        });
+    </script>
+</body>
+</html>

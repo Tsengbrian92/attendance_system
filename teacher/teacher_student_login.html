@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>補習班點名系統 - 首頁</title>
+    <link rel="stylesheet" href="/static/css/style.css" />
+  </head>
+  <body>
+    <div id="login-page" class="center-box">
+      <h1>補習班點名系統</h1>
+      <p style="margin-bottom: 20px">請選擇登入身份</p>
+
+      <div class="form-group">
+        <button id="teacher-login" class="primary-btn">老師登入</button>
+      </div>
+      <div class="form-group">
+        <button id="student-login" class="primary-btn">學生登入</button>
+      </div>
+    </div>
+
+    <script>
+      document.getElementById("teacher-login").addEventListener("click", () => {
+        window.location.href = "/teacher/login.html";
+      });
+
+      document.getElementById("student-login").addEventListener("click", () => {
+        window.location.href = "/student/login.html";
+      });
+    </script>
+  </body>
+</html>

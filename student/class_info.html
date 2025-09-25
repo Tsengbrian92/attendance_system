@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>我的課堂資訊</title>
+  <style>
+    :root {
+      --bg1: #4facfe; --bg2: #00f2fe; --card: #fff;
+      --th: #c4ebfc; --td: #f8fcff; --border: #b5e3fc;
+      --shadow: 0 6px 15px rgba(0,0,0,0.13);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; padding: 0; min-height: 100vh;
+      display: flex; justify-content: center; align-items: center;
+      background: linear-gradient(to bottom, var(--bg1), var(--bg2));
+      font-family: Arial, sans-serif; color: #123;
+    }
+    .container {
+      background: var(--card);
+      border-radius: 15px;
+      box-shadow: var(--shadow);
+      width: min(960px, 92vw);
+      max-height: 88vh;
+      padding: 18px 18px 12px;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    h2 { margin: 2px 0 0; text-align: center; }
+    .toolbar {
+      display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap;
+    }
+    select, button {
+      padding: 6px 10px; border: 1px solid #cfeafc; border-radius: 8px; background: #f6fbff; cursor: pointer;
+    }
+    button:disabled { opacity: .5; cursor: not-allowed; }
+    .table-wrap {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: auto;
+      max-height: 60vh;
+      background: white;
+    }
+    table { width: 100%; border-collapse: separate; border-spacing: 0; }
+    th, td { padding: 10px 12px; text-align: center; border-bottom: 1px solid var(--border); white-space: nowrap; }
+    th { background: var(--th); position: sticky; top: 0; z-index: 1; }
+    tbody tr:nth-child(even) td { background: var(--td); }
+    tbody tr:hover td { background: #e6faff; }
+    #pager { display: flex; gap: 8px; justify-content: center; align-items: center; padding-top: 6px; flex-wrap: wrap; }
+    #page-info { padding: 4px 8px; }
+    @media (max-width: 560px) { th, td { white-space: normal; } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>我的課堂資訊</h2>
+
+    <div class="toolbar">
+      <div>
+        <label for="page-size">每頁顯示</label>
+        <select id="page-size">
+          <option value="5">5 筆</option>
+          <option value="10" selected>10 筆</option>
+          <option value="20">20 筆</option>
+          <option value="50">50 筆</option>
+        </select>
+      </div>
+      <div>
+        <button id="reload">重新載入</button>
+        <button id="back-to-login" class="text-btn">返回主頁</button>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table id="class-table" aria-label="我的課堂資訊">
+        <thead>
+          <tr>
+            <th>課程名稱</th>
+            <th>老師名稱</th>
+            <th>開始日期</th>
+            <th>結束日期</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td colspan="4">載入中...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div id="pager">
+      <button id="prev">上一頁</button>
+      <span id="page-info">第 1 / 1 頁（共 0 筆）</span>
+      <button id="next">下一頁</button>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('back-to-login').addEventListener('click', () => {
+      const params = new URLSearchParams(location.search);
+      const studentId = params.get('studentId');
+      window.location.href = `home.html?studentId=${studentId}`;
+    });
+    document.addEventListener('DOMContentLoaded', main);
+
+    async function main() {
+      const params = new URLSearchParams(location.search);
+      const studentId = params.get('studentId') || '';
+      const token = localStorage.getItem('access_token') || '';
+
+      const tbody = document.querySelector('#class-table tbody');
+      const pageInfo = document.querySelector('#page-info');
+      const prevBtn = document.querySelector('#prev');
+      const nextBtn = document.querySelector('#next');
+      const pageSizeSel = document.querySelector('#page-size');
+      const reloadBtn = document.querySelector('#reload');
+
+      const savedSize = localStorage.getItem('my_classes_page_size');
+      if (savedSize) pageSizeSel.value = savedSize;
+
+      let allData = [];
+      let currentPage = 1;
+
+      function fmtDate(dstr) {
+        if (!dstr) return '';
+        const d = new Date(dstr);
+        if (Number.isNaN(d.getTime())) return dstr;
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${y}/${m}/${day}`;
+      }
+
+      function render(page = 1) {
+        const pageSize = Number(pageSizeSel.value);
+        const total = allData.length;
+        const totalPages = Math.max(1, Math.ceil(total / pageSize));
+        currentPage = Math.min(Math.max(1, page), totalPages);
+
+        const start = (currentPage - 1) * pageSize;
+        const rows = allData.slice(start, start + pageSize);
+
+        tbody.innerHTML = '';
+        if (rows.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="4">目前沒有任何課堂資訊</td></tr>`;
+        } else {
+          const frag = document.createDocumentFragment();
+          for (const r of rows) {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+              <td>${r.class_name ?? ''}</td>
+              <td>${r.teacher_name ?? ''}</td>
+              <td>${fmtDate(r.start_date)}</td>
+              <td>${fmtDate(r.end_date)}</td>
+            `;
+            frag.appendChild(tr);
+          }
+          tbody.appendChild(frag);
+        }
+
+        pageInfo.textContent = `第 ${currentPage} / ${totalPages} 頁（共 ${total} 筆）`;
+        prevBtn.disabled = currentPage <= 1;
+        nextBtn.disabled = currentPage >= totalPages;
+      }
+
+      async function load() {
+        tbody.innerHTML = `<tr><td colspan="4">載入中...</td></tr>`;
+        try {
+          const url = new URL('http://26.8.220.101:5000/api/my_classes');
+          if (studentId) url.searchParams.set('studentId', studentId);
+
+          const headers = {};
+          if (token) headers['Authorization'] = 'Bearer ' + token;
+
+          const res = await fetch(url, { headers });
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const data = await res.json();
+
+          allData = Array.isArray(data) ? data : [];
+          render(1);
+        } catch (e) {
+          console.error(e);
+          tbody.innerHTML = `<tr><td colspan="4">載入失敗，請稍後再試</td></tr>`;
+          pageInfo.textContent = `第 1 / 1 頁（共 0 筆）`;
+          prevBtn.disabled = nextBtn.disabled = true;
+        }
+      }
+
+      prevBtn.addEventListener('click', () => render(currentPage - 1));
+      nextBtn.addEventListener('click', () => render(currentPage + 1));
+      pageSizeSel.addEventListener('change', () => {
+        localStorage.setItem('my_classes_page_size', pageSizeSel.value);
+        render(1);
+      });
+      reloadBtn.addEventListener('click', load);
+
+      load();
+    }
+  </script>
+</body>
+</html>

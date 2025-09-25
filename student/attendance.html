@@ -1,23 +1,290 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-Hant">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>點名紀錄</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background: linear-gradient(to bottom, #4facfe, #00f2fe);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-    <style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>點名紀錄</title>
+  <style>
+    :root {
+      --bg1: #4facfe;
+      --bg2: #00f2fe;
+      --card: #fff;
+      --th: #c4ebfc;
+      --td: #f8fcff;
+      --border: #b5e3fc;
+      --shadow: 0 6px 15px rgba(0,0,0,0.13);
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to bottom, var(--bg1), var(--bg2));
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #123;
+    }
+    .container {
+      background: var(--card);
+      border-radius: 15px;
+      padding: 20px 20px 16px;
+      box-shadow: var(--shadow);
+      width: min(960px, 92vw);
+      max-height: 88vh; /* 避免卡片太高 */
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    h2 { margin: 0 0 2px; text-align: center; }
+
+    /* 操作列 */
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+    .toolbar-left, .toolbar-right {
+      display: flex; gap: 8px; align-items: center;
+    }
+    select, button {
+      padding: 6px 10px;
+      border-radius: 8px;
+      border: 1px solid #cfeafc;
+      background: #f6fbff;
+      cursor: pointer;
+    }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* 滾動表格區 */
+    .table-wrap {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;              /* 圓角不被捲動截斷 */
+      background: white;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.02);
+      /* 讓表格本身不要把卡片撐爆，固定一個最高高度捲動 */
+      max-height: 60vh;
+      overflow: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: separate;     /* 搭 sticky 比較穩 */
+      border-spacing: 0;
+    }
+    th, td {
+      border-bottom: 1px solid var(--border);
+      padding: 10px 12px;
+      text-align: center;
+      white-space: nowrap;
+    }
+    th {
+      background: var(--th);
+      font-weight: bold;
+      position: sticky; /* 黏住表頭 */
+      top: 0;
+      z-index: 2;
+    }
+    tbody tr:nth-child(even) td { background: var(--td); }
+    tbody tr:hover td { background: #e6faff; }
+
+    /* 分頁區塊 */
+    #pager {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      align-items: center;
+      padding-top: 6px;
+      flex-wrap: wrap;
+    }
+    #page-info { padding: 4px 8px; }
+
+    /* 手機友善：允許內文換行避免超寬 */
+    @media (max-width: 560px) {
+      th, td { white-space: normal; }
+    }
+  </style>
 </head>
 <body>
-    
+  <div class="container">
+    <h2>我的點名紀錄</h2>
+
+    <div class="toolbar">
+      <div class="toolbar-left">
+        <label for="page-size">每頁顯示</label>
+        <select id="page-size">
+          <option value="5">5 筆</option>
+          <option value="10" selected>10 筆</option>
+          <option value="20">20 筆</option>
+          <option value="50">50 筆</option>
+        </select>
+      </div>
+      <div class="toolbar-right">
+        <button id="reload">重新載入</button>
+        <button id="back-to-login" class="text-btn">返回主頁</button>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table id="attendance-table" aria-label="點名紀錄">
+        <thead>
+          <tr>
+            <th>課程名稱</th>
+            <th>日期</th>
+            <th>時間</th>
+            <th>狀態</th>
+            <th>備註</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td colspan="5">載入中...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div id="pager">
+      <button id="prev">上一頁</button>
+      <span id="page-info">第 1 / 1 頁（共 0 筆）</span>
+      <button id="next">下一頁</button>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', main);
+    document.getElementById('back-to-login').addEventListener('click', () => {
+        const params = new URLSearchParams(location.search);
+        const studentId = params.get('studentId');
+        window.location.href = `home.html?studentId=${studentId}`;
+    });
+    async function main() {
+      const params   = new URLSearchParams(location.search);
+      const studentId = params.get('studentId') || ''; // 沒帶也能打 API（後端會用 JWT）
+      const token    = localStorage.getItem('access_token') || '';
+      const tbody    = document.querySelector('#attendance-table tbody');
+      const pageInfo = document.querySelector('#page-info');
+      const prevBtn  = document.querySelector('#prev');
+      const nextBtn  = document.querySelector('#next');
+      const pageSizeSel = document.querySelector('#page-size');
+      const reloadBtn   = document.querySelector('#reload');
+
+      // 保留使用者偏好
+      const savedSize = localStorage.getItem('attendance_page_size');
+      if (savedSize) pageSizeSel.value = savedSize;
+
+      let allData = [];
+      let currentPage = 1;
+
+      function formatDate(dateStr) {
+        if (!dateStr) return '';
+        const d = new Date(dateStr);
+        if (Number.isNaN(d.getTime())) return dateStr; // 不可解析就原樣回傳
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${y}/${m}/${day}`;
+      }
+      function formatTime(row) {
+        // 盡可能聰明地組合時間欄
+        if (row.time) return row.time;
+        if (row.start_time && row.end_time) return `${row.start_time}–${row.end_time}`;
+        if (row.period) return row.period;
+        return '';
+      }
+      // 只取本地日曆日期，避免 'YYYY-MM-DD' 被當 UTC 造成跑一天
+      function parseLocalYMD(dateStr) {
+        if (!dateStr) return null;
+        // 支援 'YYYY-MM-DD' / 'YYYY/MM/DD' / 帶時間的字串
+        const m = String(dateStr).match(/(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
+        if (!m) {
+          const d = new Date(dateStr);
+          return isNaN(d) ? null : new Date(d.getFullYear(), d.getMonth(), d.getDate());
+        }
+        const y = +m[1], mo = +m[2], d = +m[3];
+        return new Date(y, mo - 1, d);
+      }
+
+      function renderPage(page = 1) {
+        const pageSize = Number(pageSizeSel.value);
+        const total = allData.length;
+        const totalPages = Math.max(1, Math.ceil(total / pageSize));
+        currentPage = Math.min(Math.max(1, page), totalPages);
+
+        // 切片
+        const start = (currentPage - 1) * pageSize;
+        const sliced = allData.slice(start, start + pageSize);
+
+        // 清空與渲染
+        tbody.innerHTML = '';
+        if (sliced.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="5">目前沒有任何點名紀錄</td></tr>`;
+        } else {
+          const frag = document.createDocumentFragment();
+          for (const row of sliced) {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+              <td>${row.class_name ?? ''}</td>
+              <td>${formatDate(row.date)}</td>
+              <td>${formatTime(row)}</td>
+              <td>${row.status ?? ''}</td>
+              <td>${row.remark ?? ''}</td>
+            `;
+            frag.appendChild(tr);
+          }
+          tbody.appendChild(frag);
+        }
+
+        // 分頁資訊 & 按鈕
+        pageInfo.textContent = `第 ${currentPage} / ${totalPages} 頁（共 ${total} 筆）`;
+        prevBtn.disabled = currentPage <= 1;
+        nextBtn.disabled = currentPage >= totalPages;
+      }
+
+      async function loadData() {
+        tbody.innerHTML = `<tr><td colspan="5">載入中...</td></tr>`;
+        try {
+          const url = new URL('http://26.8.220.101:5000/api/my_attendance');
+          if (studentId) url.searchParams.set('studentId', studentId);
+
+          const headers = {};
+          if (token) headers['Authorization'] = 'Bearer ' + token;
+
+          const res = await fetch(url, { headers });
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const data = await res.json();
+
+          // 只顯示「今天(含)以前」
+          const today = new Date();
+          today.setHours(23, 59, 59, 999);
+
+          allData = (Array.isArray(data) ? data : []).filter(row => {
+            const d = parseLocalYMD(row.date);
+            return d && d.getTime() <= today.getTime();
+          });
+
+          renderPage(1);
+        } catch (err) {
+          console.error(err);
+          tbody.innerHTML = `<tr><td colspan="5">載入失敗，請稍後再試</td></tr>`;
+          pageInfo.textContent = `第 1 / 1 頁（共 0 筆）`;
+          prevBtn.disabled = nextBtn.disabled = true;
+        }
+      }
+
+      // 綁定事件
+      prevBtn.addEventListener('click', () => renderPage(currentPage - 1));
+      nextBtn.addEventListener('click', () => renderPage(currentPage + 1));
+      pageSizeSel.addEventListener('change', () => {
+        localStorage.setItem('attendance_page_size', pageSizeSel.value);
+        renderPage(1);
+      });
+      reloadBtn.addEventListener('click', loadData);
+
+      // 初始載入
+      loadData();
+    }
+  </script>
 </body>
 </html>

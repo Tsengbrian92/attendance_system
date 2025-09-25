@@ -1,7 +1,20 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const timeInputsContainer = document.getElementById("time-inputs-container");
-    const daysCheckboxes = document.querySelectorAll(".class-day");
+  const timeInputsContainer = document.getElementById("time-inputs-container");
+  const daysCheckboxes = document.querySelectorAll(".class-day");
 
+  // 👉 班級代碼：只允許小寫英數，並即時過濾
+  const classCodeInput = document.getElementById("class_code");
+  classCodeInput.addEventListener("input", (e) => {
+    const cleaned = e.target.value.toLowerCase().replace(/[^a-z0-9]/g, "");
+    if (cleaned !== e.target.value) e.target.value = cleaned;
+    // 移除自訂錯誤訊息（若先前 invalid）
+    e.target.setCustomValidity("");
+  });
+
+  // 自訂 invalid 訊息（搭配 HTML 的 pattern）
+  classCodeInput.addEventListener("invalid", function () {
+    this.setCustomValidity("班級代碼僅能使用英文小寫與數字，且至少 1 碼。");
+  });
     daysCheckboxes.forEach(checkbox => {
         checkbox.addEventListener("change", () => {
             const day = checkbox.value;

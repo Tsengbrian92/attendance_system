@@ -118,7 +118,10 @@ function deleteClass() {
 });
     }
 }
-
+function goGrade() {
+    const classId = new URLSearchParams(window.location.search).get('classId');
+    window.location.href = `grade.html?classId=${classId}`;
+}
 function goBack() {
     window.location.href = 'class_info.html';
 }

@@ -128,23 +128,6 @@
       <div class="result" id="result-message"></div>
     </div>
 
-    <div id="student-list">
-      <h3>今日學生簽到狀況</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>學號</th>
-            <th>姓名</th>
-            <th>狀態</th>
-            <th>簽到時間</th>
-          </tr>
-        </thead>
-        <tbody id="student-table-body">
-          <tr><td colspan="4">載入中...</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
 
   <script>
     let currentMode = 'manual';
@@ -158,20 +141,26 @@
 
     function submitManual() {
       const studentId = document.getElementById('student-id').value.trim();
+      const status = "出席"
       if (!studentId) return alert("請輸入學號");
 
-      fetch('http://26.8.220.101:5000/attendance/manual', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      fetch("http://26.8.220.101:5000/attendance/manual", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ student_id: studentId })
       })
         .then(res => res.json())
         .then(data => {
-          document.getElementById('result-message').textContent = data.message;
-          loadStudentAttendance();
+          document.getElementById("result-message").textContent = data.message;
+          fetch("http://26.179.23.189:5003/add_attendance", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ student_id: studentId, status: status })
+          })
+          loadAttendanceStatus();
         })
         .catch(() => {
-          document.getElementById('result-message').textContent = "伺服器錯誤";
+          document.getElementById("result-message").textContent = data.message;
         });
     }
 
@@ -183,7 +172,11 @@
           if (data.status === "success") {
             document.getElementById('card-status').value = data.card_num;
             document.getElementById('result-message').textContent = data.message;
-            loadStudentAttendance();
+            fetch("http://26.179.23.189:5003/add_attendance", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ student_id: data.student_id, status: "出席" })
+            })
           } else {
             document.getElementById('result-message').textContent = "讀卡失敗：" + data.message;
           }
@@ -193,37 +186,8 @@
         });
     }
 
-    function loadStudentAttendance() {
-      fetch('http://26.8.220.101:5000/api/students_attendance_today')
-        .then(res => res.json())
-        .then(data => {
-          const tbody = document.getElementById('student-table-body');
-          tbody.innerHTML = '';
-          if (data.status === 'success') {
-            data.students.forEach(student => {
-              const tr = document.createElement('tr');
-              tr.innerHTML = `
-                <td>${student.student_id}</td>
-                <td>${student.name}</td>
-                <td style="color: ${student.checked_in ? 'green' : 'red'}; font-weight: bold;">
-                  ${student.checked_in ? '✅ 已簽到' : '❌ 未簽到'}
-                </td>
-                <td>${student.checked_in ? student.sign_time : '-'}</td>
-              `;
-              tbody.appendChild(tr);
-            });
-          } else {
-            tbody.innerHTML = `<tr><td colspan="4">讀取失敗：${data.message}</td></tr>`;
-          }
-        })
-        .catch(() => {
-          document.getElementById('student-table-body').innerHTML =
-            `<tr><td colspan="4">伺服器錯誤</td></tr>`;
-        });
-    }
 
     // 初始載入 + 每 30 秒刷新
-    loadStudentAttendance();
     setInterval(loadStudentAttendance, 30000);
   </script>
 </body>

@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>學生功能頁面</title>
+    <title>成績查詢頁面</title>
+    <link rel="stylesheet" href="/static/css/style.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -49,7 +50,7 @@
         .btn-attendance {
             background-color: #d98208;
         }
-        .btn-class-info {
+        .btn-class-information {
             background-color: #4caf50;
         }
         .btn-change-password {
@@ -60,13 +61,18 @@
 </head>
 <body>
     <div id = home-page class="container">
-        <h1>補習班學生系統</h1>
-        <button id = "grade_button" class="button btn-grade">成績查詢</button>
-        <button id = "attendance_button" class="button btn-attendance">點名紀錄</button>
-        <button id = "class_info_button" class="button btn-class-info">課堂資訊</button>
-        <button id = "change_password_button" class="button btn-change-password">修改密碼</button>
+        <h1>成績查詢</h1>
+        <div id="classes-list">
+            <button id="back-to-login" class="text-btn">返回主頁</button>
+        </div>
+        <script src="/static/script/classes.js"></script>
+        
     </div>
-    <script src="/static/script/home.js"></script>
+    <script>
+        document.getElementById('back-to-login').addEventListener('click', () => {
+        window.location.href = `home.html?studentId=${studentId}`;
+    });
+    </script>
 </body>
 
 </html>

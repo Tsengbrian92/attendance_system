@@ -11,23 +11,29 @@ document.getElementById('login-button').addEventListener('click', () => {
         return;
     }
 
-    fetch('http://26.8.220.101:5000/api/t_login', {
+    fetch('http://127.0.0.1:5000/api/s_login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })
     })
     .then(response => {
         if (!response.ok) {
-            throw new Error('點名失敗，請檢查帳號或密碼');
+            throw new Error('登入失敗，請檢查帳號或密碼');
         }
         return response.json();
     })
     .then(data => {
         accessToken = data.access_token;
-        alert('點名成功！');
-        document.getElementById('login-page').style.display = 'none';
-        document.getElementById('attendance-page').style.display = 'block';
-        loadStudents();
+        localStorage.setItem('access_token', data.access_token);
+        alert('登入成功！');
+        window.location.href = `home.html?studentId=${username}`;
     })
+
     .catch(error => alert(error.message));
 });
+
+document.getElementById('register-button').addEventListener('click', () => {
+    window.location.href = 'register.html';
+});
+
+ 
