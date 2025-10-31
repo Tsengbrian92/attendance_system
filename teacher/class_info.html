@@ -10,8 +10,8 @@
     <div class="container">
         <h1>班級管理</h1>
         <div class="actions">
-            <button id="add-class-button">新增班級</button>
-            <button id="back_home">回到主頁</button>
+            <button id="add-class-button" class="button btn-add-class" >新增班級</button>
+            <button id="back_home" class="button btn-back_home">回到主頁</button>
         </div>
         <div id="class-list">
             <!-- 班級列表會由 JavaScript 動態填充 -->
@@ -19,15 +19,7 @@
     </div>
     <script src="/static/script/teacher_verify.js"></script>
     <script src="/static/script/class_info.js"></script>
-    <script>
-        document.getElementById('add-class-button').addEventListener('click', () => {
-        window.location.href = 'createclass.html';
-    });
-    </script>
-    <script>
-        document.getElementById('back_home').addEventListener('click', () => {
-        window.location.href = 'home.html';
-    });
-    </script>
+    
+    
 </body>
 </html>

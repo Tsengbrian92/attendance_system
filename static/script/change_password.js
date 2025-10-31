@@ -20,7 +20,7 @@ document.getElementById('change-password-btn').addEventListener('click', async (
     }
 
     const token = localStorage.getItem('access_token');
-    const res = await fetch('http://26.8.220.101:5000/api/change_password', {
+    const res = await fetch('http://26.218.4.126:5000/api/change_password', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

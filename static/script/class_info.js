@@ -1,7 +1,14 @@
 // 從後端獲取班級列表
 async function fetchClassList() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const teacherId = urlParams.get("teacherId");
+    if (!teacherId) {
+        alert("找不到教師帳號資訊，請重新登入");
+        return;
+    }
+    
     try {
-        const response = await fetch("http://26.8.220.101:5000/api/get-classes"); // 替換為後端 API 的 URL
+        const response = await fetch(`http://26.218.4.126:5000/api/get-classes?teacherId=${teacherId}`); // 替換為後端 API 的 URL
         if (!response.ok) {
             throw new Error("無法獲取班級資料，請稍後再試！");
         }
@@ -38,9 +45,19 @@ function renderClassList(classes) {
 
 // 跳轉到查看詳情
 function navigateToAddStudent(classId) {
-    window.location.href = `solo_class_info.html?classId=${classId}`; // 替換為後端對應頁面的 URL
+    const username = getStudentIdFromUrl();
+    window.location.href = `solo_class_info.html?classId=${classId}&teacherId=${username}`; // 替換為後端對應頁面的 URL
 }
 
+document.getElementById('back_home').addEventListener('click', async () => {
+    const username = getStudentIdFromUrl();
+    window.location.href = `home.html?teacherId=${username}`;
+});
+
+document.getElementById('add-class-button').addEventListener('click', async () => {
+    const username = getStudentIdFromUrl();
+    window.location.href = `createclass.html?teacherId=${username}`;
+});
 
 // 初始化頁面
 fetchClassList();

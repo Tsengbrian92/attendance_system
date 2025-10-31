@@ -1,3 +1,8 @@
+function getStudentIdFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('teacherId');
+}
+
 async function verifyToken() {
     const accessToken = localStorage.getItem('teacher_access_token'); // 從 localStorage 獲取 Token
     if (!accessToken) {
@@ -7,7 +12,7 @@ async function verifyToken() {
     
     try {
         // 向後端驗證 Token 是否有效
-        const response = await fetch('http://26.8.220.101:5000/api/teacher/verify', {
+        const response = await fetch('http://26.218.4.126:5000/api/teacher/verify', {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${accessToken}`
@@ -39,3 +44,30 @@ function handleUnauthenticated(message) {
 window.onload = () => {
     verifyToken()
 };
+
+document.getElementById('class_button').addEventListener('click', async () => {
+    const username = getStudentIdFromUrl();
+    window.location.href = `class_info.html?teacherId=${username}`;
+});
+
+document.getElementById('query_button').addEventListener('click', async () => {
+    const username = getStudentIdFromUrl();
+    window.location.href = `student.html?teacherId=${username}`;
+});
+
+document.getElementById('add_button').addEventListener('click', async () => {
+    const username = getStudentIdFromUrl();
+    window.location.href = `register.html?teacherId=${username}`;
+});
+document.getElementById('tack_attendance_button').addEventListener('click', async () => {
+    const username = getStudentIdFromUrl();
+    window.location.href = `attendance.html?teacherId=${username}`;
+});
+document.getElementById('attendance_button').addEventListener('click', async () => {
+    const username = getStudentIdFromUrl();
+    window.location.href = `/view-attendance?teacherId=${username}`;
+});
+document.getElementById('back_home').addEventListener('click', async () => {
+    const username = getStudentIdFromUrl();
+    window.location.href = `home.html?teacherId=${username}`;
+});

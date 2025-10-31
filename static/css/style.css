@@ -46,7 +46,7 @@ input[type="text"], input[type="password"], input[type="gmail"] {
     transition: all 0.3s ease-in-out;
 }
 
-input[type="text"]:focus, input[type="password"], input[type="gmail"]:focus {
+input[type="text"]:focus, input[type="password"]:focus, input[type="gmail"]:focus {
     border-color: #4facfe;
     box-shadow: 0 0 5px rgba(79, 172, 254, 0.5);
 }

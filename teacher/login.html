@@ -16,7 +16,16 @@
             <input type="password" id="password" placeholder="密碼" />
         </div>
         <button id="login-button" class="primary-btn">登入</button>
-
+        <div class="button-container">
+            <button id="register-button" class="text-btn">創建帳號</button>
+            <button id="forget-button" class="text-btn">忘記密碼</button>
+        </div>
+        <script>
+            document.getElementById('register-button').addEventListener('click', () => {
+                // 跳轉到註冊頁面
+                window.location.href = '/register';
+            });
+        </script>
     </div>
 
 

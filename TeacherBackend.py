@@ -29,10 +29,11 @@ jwt = JWTManager(app)
 
 # 資料庫配置
 db_config = {
-    "host": "127.0.0.1",
-    "user": "root",
-    "password": "Aa0901155900",  # 替換為你的資料庫密碼
-    "database": "studentif"  # 替換為你的資料庫名稱
+    "host": "26.218.4.126",
+    "user": "remoteuser",
+    "password": "0901155900",  # 替換為你的資料庫密碼
+    "database": "studentif",  # 替換為你的資料庫名稱
+    "port": 3306
 }
 
 @app.errorhandler(422)
@@ -58,13 +59,24 @@ def teacher_login():
         cursor.execute(query, (username,))
         result = cursor.fetchone()
 
-        if result and bcrypt.checkpw(password.encode('utf-8'), result['password'].encode('utf-8')):
-            # 生成 Token
+        if not result:
+            return jsonify({"message": "帳號或密碼錯誤"}), 401
+
+        stored_pw = result["password"]
+
+        # 嘗試以 bcrypt 驗證
+        try:
+            is_valid = bcrypt.checkpw(password.encode("utf-8"), stored_pw.encode("utf-8"))
+        except ValueError:
+            # 捕捉 Invalid salt → 表示這是明碼
+            is_valid = (password == stored_pw)
+
+        if is_valid:
             token = create_access_token(identity=username)
             return jsonify({"access_token": token}), 200
         else:
             return jsonify({"message": "帳號或密碼錯誤"}), 401
-
+        
     except Exception as e:
         return jsonify({"message": f"發生錯誤：{str(e)}"}), 500
 
@@ -202,9 +214,86 @@ def delete_class():
             if conn: conn.close()
         except:
             pass
+
+@app.route('/api/teacher/register', methods=['POST'])
+def teacher_register():
+    data = request.json
+    username = data.get("username")
+    password = data.get("password")
+    name = data.get("name")
+    email = data.get("email")
+    phone = data.get("phone")
+
+    # 驗證所有欄位是否填寫
+    missing_fields = [field for field, value in {
+        "username": username,
+        "password": password,
+        "name": name,
+        "email": email,
+        "phone": phone,
+    }.items() if not value]
+
+    if missing_fields:
+        return jsonify({"message": f"以下欄位未填寫：{', '.join(missing_fields)}"}), 400
+
+    # 驗證帳號長度
+    if len(username) < 5:
+        return jsonify({"message": "帳號必須至少 5 個字以上！"}), 400
+
+    # 驗證密碼格式
+    password_regex = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$'
+    if not re.match(password_regex, password):
+        return jsonify({"message": "密碼必須至少 8 個字以上，包含大小寫字母和數字！"}), 400
+
+    # 驗證電子郵件格式
+    email_regex = r'^[a-zA-Z0-9._%+-]+@gmail\.com$'
+    if not re.match(email_regex, email):
+        return jsonify({"message": "請輸入正確的 Gmail 地址！"}), 400
+
+    # 驗證電話號碼格式
+    if not phone.isdigit() or len(phone) != 10:
+        return jsonify({"message": "請輸入正確的電話號碼！"}), 400
+
+    try:
+        # 連接到資料庫
+        connection = mysql.connector.connect(**db_config)
+        cursor = connection.cursor()
+
+        # 檢查重複資料
+        cursor.execute("SELECT id FROM t_account WHERE username = %s", (username,))
+        if cursor.fetchone():
+            return jsonify({"message": "該帳號名稱已被使用，請更換！"}), 400
+
+        cursor.execute("SELECT id FROM t_account WHERE email = %s", (email,))
+        if cursor.fetchone():
+            return jsonify({"message": "該電子郵件已被使用，請更換！"}), 400
+
+        cursor.execute("SELECT id FROM t_account WHERE phone = %s", (phone,))
+        if cursor.fetchone():
+            return jsonify({"message": "該電話號碼已被使用，請更換！"}), 400
+
+        # 插入資料
+        insert_query = """
+            INSERT INTO t_account (username, password, name, email, phone)
+            VALUES (%s, %s, %s, %s, %s)
+        """
+        cursor.execute(insert_query, (username, password, name, email, phone))
+        connection.commit()
+
+        return jsonify({"message": "帳號創建成功"}), 201
+
+    except mysql.connector.Error as err:
+        print(f"資料庫錯誤: {err}")
+        return jsonify({"message": "帳號創建失敗"}), 500
+
+    finally:
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()
             
-@app.route('/api/register', methods=['POST'])
-def register():
+@app.route('/api/student/register', methods=['POST'])
+def student_register():
     data = request.json
     username = data.get("username")
     password = data.get("password")
@@ -343,12 +432,36 @@ def create_attendance_table(cursor, class_code, start_date, class_count):
    
 @app.route('/api/get-classes', methods=['GET'])
 def get_classes():
+    teacher_id = request.args.get('teacherId')  # 從前端 query string 拿到 teacherId
+
+    if not teacher_id:
+        return jsonify({"message": "缺少教師帳號（teacherId）"}), 400
+
     try:
         connection = mysql.connector.connect(**db_config)
         cursor = connection.cursor(dictionary=True)
 
-        query = "SELECT class_code AS id, class_name AS name, teacher_name AS teacher, students_count AS students FROM classes"
-        cursor.execute(query)
+        # 先查教師名字
+        query_teacher = "SELECT name FROM t_account WHERE username = %s"
+        cursor.execute(query_teacher, (teacher_id,))
+        teacher = cursor.fetchone()
+
+        if not teacher:
+            return jsonify({"message": "找不到該教師帳號"}), 404
+
+        teacher_name = teacher['name']
+
+        # 再查該教師所開課程
+        query_classes = """
+            SELECT 
+                class_code AS id, 
+                class_name AS name, 
+                teacher_name AS teacher, 
+                students_count AS students 
+            FROM classes
+            WHERE teacher_name = %s
+        """
+        cursor.execute(query_classes, (teacher_name,))
         classes = cursor.fetchall()
 
         return jsonify(classes), 200

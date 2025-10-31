@@ -11,7 +11,7 @@ document.getElementById('login-button').addEventListener('click', () => {
         return;
     }
 
-    fetch('http://127.0.0.1:5000/api/s_login', {
+    fetch('http://26.218.4.126:5000/api/s_login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })

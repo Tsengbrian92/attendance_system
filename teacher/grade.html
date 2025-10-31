@@ -75,7 +75,7 @@
 
         // 取得考試清單
         if (classId) {
-            fetch(`http://26.8.220.101:5000/api/get-exams?classId=${classId}`)
+            fetch(`http://26.218.4.126:5000/api/get-exams?classId=${classId}`)
                 .then(res => res.json())
                 .then(data => {
                     if (data.exams && data.exams.length > 0) {
@@ -100,7 +100,7 @@
                 return;
             }
 
-            fetch(`http://26.8.220.101:5000/api/get-exam-grades?classId=${classId}&exam=${exam}`)
+            fetch(`http://26.218.4.126:5000/api/get-exam-grades?classId=${classId}&exam=${exam}`)
                 .then(res => res.json())
                 .then(data => {
                     gradesTableBody.innerHTML = "";
@@ -133,7 +133,7 @@
 
         // 更新分數到後端
         function updateScore(studentId, examName, newScore) {
-            fetch(`http://26.8.220.101:5000/api/update-grade`, {
+            fetch(`http://26.218.4.126:5000/api/update-grade`, {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify({
@@ -171,7 +171,7 @@
 
             gradesTableBody.innerHTML = "<tr><td colspan='3'>載入中...</td></tr>";
 
-            fetch(`http://26.8.220.101:5000/api/get-students?classId=${classId}`)
+            fetch(`http://26.218.4.126:5000/api/get-students?classId=${classId}`)
                 .then(res => res.json())
                 .then(data => {
                     gradesTableBody.innerHTML = "";
@@ -211,7 +211,7 @@
                 }
             });
 
-            fetch("http://26.8.220.101:5000/api/add-exam", {
+            fetch("http://26.218.4.126:5000/api/add-exam", {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify({

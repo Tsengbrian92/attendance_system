@@ -10,7 +10,7 @@ if (!studentId) {
   container.innerHTML = '<p style="color:#900;">缺少 studentId 參數</p>';
 } else {
   // 取得我的班級（改：把 studentId 放到 query string）
-  fetch(`http://26.8.220.101:5000/api/my_classes?studentId=${encodeURIComponent(studentId)}`, {
+  fetch(`http://26.218.4.126:5000/api/my_classes?studentId=${encodeURIComponent(studentId)}`, {
       headers: { 'Authorization': 'Bearer ' + accessToken }
   })
   .then(res => res.json())
@@ -43,10 +43,12 @@ if (!studentId) {
 
           // 點擊箭頭展開/收合
           header.addEventListener('click', () => {
+            const arrow = header.querySelector('.arrow'); // 找到箭頭元素
               if (detail.style.display === 'none') {
                   detail.style.display = 'block';
+                  arrow.textContent = '▲'; // 展開時換成向上箭頭
                   // 請求該班級成績（改：帶上 studentId）
-                  fetch(`http://26.8.220.101:5000/api/class_grade/${encodeURIComponent(cls.class_code)}?studentId=${encodeURIComponent(studentId)}`, {
+                  fetch(`http://26.218.4.126:5000/api/class_grade/${encodeURIComponent(cls.class_code)}?studentId=${encodeURIComponent(studentId)}`, {
                       headers: { 'Authorization': 'Bearer ' + accessToken }
                   })
                   .then(res => res.json())
@@ -66,6 +68,7 @@ if (!studentId) {
                   });
               } else {
                   detail.style.display = 'none';
+                  arrow.textContent = '▼'; // 收起時換回向下箭頭
               }
           });
 

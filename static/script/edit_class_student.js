@@ -8,13 +8,13 @@ async function fetchStudents() {
 
     try {
         // 獲取班級學生
-        const classResponse = await fetch(`http://26.8.220.101:5000/api/get-class-students?class_code=${classCode}`);
+        const classResponse = await fetch(`http://26.218.4.126:5000/api/get-class-students?class_code=${classCode}`);
         const classStudents = await classResponse.json();
         classStudentsData = classStudents;
         renderclassStudents('class-students-list', classStudents);
 
         // 獲取不在班級的學生
-        const nonClassResponse = await fetch(`http://26.8.220.101:5000/api/get-non-class-students?class_code=${classCode}`);
+        const nonClassResponse = await fetch(`http://26.218.4.126:5000/api/get-non-class-students?class_code=${classCode}`);
         const nonClassStudents = await nonClassResponse.json();
         nonClassStudentsData = nonClassStudents;
         renderStudents('non-class-students-list', nonClassStudents);
@@ -81,7 +81,7 @@ async function addToClass(studentId, studentName, studentEmail, studentPhone) {
     }
 
     try {
-        const response = await fetch(`http://26.8.220.101:5000/api/get-max-students?classId=${classCode}`);
+        const response = await fetch(`http://26.218.4.126:5000/api/get-max-students?classId=${classCode}`);
         if (!response.ok) throw new Error("無法獲取班級最大學生數");
 
         const data = await response.json();
@@ -155,7 +155,7 @@ async function saveChanges() {
     }
 
     try {
-        const response = await fetch(`http://26.8.220.101:5000/api/update-class-students`, {
+        const response = await fetch(`http://26.218.4.126:5000/api/update-class-students`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ classCode, addedStudents, removedStudents })

@@ -65,7 +65,7 @@ document.addEventListener("DOMContentLoaded", () => {
             schedule: selectedDays, // 將選中的星期與時間一起傳送
         };
 
-        fetch("http://26.8.220.101:5000/api/create-class", {
+        fetch("http://26.218.4.126:5000/api/create-class", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

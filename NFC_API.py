@@ -3,7 +3,7 @@ import requests
 
 SERIAL_PORT = "COM11"  # Windows
 BAUD_RATE = 115200
-API_URL = "http://26.8.220.101:5000/receive_uid"  # Flask API 端點
+API_URL = "http://26.218.4.126:5000/receive_uid"  # Flask API 端點
 
 try:
     # 連接 Arduino

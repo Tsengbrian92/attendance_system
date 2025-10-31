@@ -19,7 +19,7 @@
             <input type="text" id="phone" placeholder="輸入手機號碼" />
         </div>
         <div class="form-group">
-            <input type="text" id="new-username" placeholder="輸入學號" />
+            <input type="text" id="new-username" placeholder="輸入使用者名稱" />
         </div>
         <div class="form-group">
             <input type="password" id="new-password" placeholder="輸入密碼" />
@@ -27,20 +27,15 @@
         <div class="form-group">
             <input type="password" id="check-password" placeholder="再次輸入密碼" />
         </div>
-        <div class="form-group">
-            <input type="text" id="card-num" placeholder="請刷卡取得卡號" readonly />
-
-        </div>
-        <button type="button" id="read-card-button" class="primary-btn">按此開始讀卡</button>
-        <p id="card-status" style="color: green;"></p>
+        
         <button id="create-account-button" class="primary-btn">創建帳號</button>
         <button id="back-to-login" class="text-btn">返回主頁</button>
     </div>
 
-    <script src="/static/script/register.js"></script>
+    <script src="/static/script/teacher_register.js"></script>
     <script>
         document.getElementById('back-to-login').addEventListener('click', () => {
-        window.location.href = 'home.html';
+        window.location.href = 'login.html';
     });
     </script>
 

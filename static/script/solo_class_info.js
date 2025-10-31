@@ -14,7 +14,7 @@ async function fetchClassInfo() {
     }
 
     try {
-        const response = await fetch(`http://26.8.220.101:5000/api/get-class-info?classId=${classId}`);
+        const response = await fetch(`http://26.218.4.126:5000/api/get-class-info?classId=${classId}`);
         if (!response.ok) {
             throw new Error("無法獲取班級資訊");
             
@@ -49,7 +49,7 @@ async function fetchStudents() {
     }
 
     try {
-        const response = await fetch(`http://26.8.220.101:5000/api/get-students?classId=${classId}`);
+        const response = await fetch(`http://26.218.4.126:5000/api/get-students?classId=${classId}`);
         if (!response.ok) {
             throw new Error("無法獲取學生清單");
         }
@@ -96,7 +96,7 @@ function editStudents() {
 function deleteClass() {
     const classId = getClassIdFromUrl();
     if (confirm('確定要刪除這個班級嗎？')) {
-        fetch("http://26.8.220.101:5000/delete_class", {
+        fetch("http://26.218.4.126:5000/delete_class", {
     method: 'DELETE',
     headers: {
         'Content-Type': 'application/json'
@@ -125,3 +125,8 @@ function goGrade() {
 function goBack() {
     window.location.href = 'class_info.html';
 }
+
+document.getElementById('primary_button').addEventListener('click', async () => {
+    const username = getStudentIdFromUrl();
+    window.location.href = `class_info.html?teacherId=${username}`;
+});

@@ -245,7 +245,7 @@
       async function loadData() {
         tbody.innerHTML = `<tr><td colspan="5">載入中...</td></tr>`;
         try {
-          const url = new URL('http://26.8.220.101:5000/api/my_attendance');
+          const url = new URL('http://26.218.4.126:5000/api/my_attendance');
           if (studentId) url.searchParams.set('studentId', studentId);
 
           const headers = {};

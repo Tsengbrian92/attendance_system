@@ -15,7 +15,7 @@ async function teacherLogin() {
     loginButton.disabled = true;
 
     try {
-        const response = await fetch('http://26.8.220.101:5000/api/t_login', {
+        const response = await fetch('http://26.218.4.126:5000/api/t_login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, password })
@@ -35,7 +35,7 @@ async function teacherLogin() {
         localStorage.setItem('teacher_access_token', accessToken); // 儲存 Token 到 localStorage
 
         alert('成功登錄！');
-        window.location.href = 'home.html'; // 跳轉到首頁
+        window.location.href = `home.html?teacherId=${username}`; // 跳轉到首頁
 
     } catch (error) {
         console.error('登入失敗:', error);
@@ -54,4 +54,8 @@ document.getElementById('password').addEventListener('keypress', (event) => {
     if (event.key === 'Enter') {
         teacherLogin();
     }
+});
+
+document.getElementById('register-button').addEventListener('click', () => {
+    window.location.href = 'register.html';
 });

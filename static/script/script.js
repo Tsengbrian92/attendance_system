@@ -11,7 +11,7 @@ document.getElementById('login-button').addEventListener('click', () => {
         return;
     }
 
-    fetch('http://26.8.220.101:5000/api/login', {
+    fetch('http://26.218.4.126:5000/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })
@@ -34,7 +34,7 @@ document.getElementById('login-button').addEventListener('click', () => {
 
 // 加載學生列表
 function loadStudents() {
-    fetch('http://26.8.220.101:5000/api/students', {
+    fetch('http://26.218.4.126:5000/api/students', {
         headers: { Authorization: `Bearer ${accessToken}` }
     })
     .then(response => response.json())
@@ -67,7 +67,7 @@ document.getElementById('saveAttendance').addEventListener('click', () => {
         });
     });
 
-    fetch('http://26.8.220.101:5000/api/attendance', {
+    fetch('http://26.218.4.126:5000/api/attendance', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
