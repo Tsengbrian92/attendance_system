@@ -77,7 +77,8 @@ document.addEventListener("DOMContentLoaded", () => {
             alert(data.message);
             document.getElementById("create-class-form").reset();
             timeInputsContainer.innerHTML = ""; // 清空動態生成的時間輸入框
-            window.location.href = 'home.html';
+            const username = getStudentIdFromUrl();
+            window.location.href = `home.html&teacherId=${username}`;
         })
         .catch(error => {
             console.error("Error:", error);

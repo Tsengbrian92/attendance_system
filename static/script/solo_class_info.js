@@ -89,7 +89,8 @@ window.onload = () => {
 
 function editStudents() {
     const classId = new URLSearchParams(window.location.search).get('classId');
-    window.location.href = `edit_class_student.html?classId=${classId}`;
+    const username = getStudentIdFromUrl();
+    window.location.href = `edit_class_student.html?classId=${classId}&teacherId=${username}`;
 }
 
 
@@ -107,7 +108,8 @@ function deleteClass() {
 .then(data => {
     if (data.status === 'success') {
         alert("✅ 班級刪除成功");
-        window.location.href = 'class_info.html';
+        const username = getStudentIdFromUrl();
+        window.location.href = `class_info.html?teacherId=${username}`;
     } else {
         alert("❌ 刪除失敗：" + data.message);
     }

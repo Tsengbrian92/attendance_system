@@ -165,7 +165,8 @@ async function saveChanges() {
             alert("儲存成功！");
             addedStudents = [];
             removedStudents = [];
-            window.location.href = `solo_class_info.html?classId=${classCode}`;
+            const username = getStudentIdFromUrl();
+            window.location.href = `solo_class_info.html?classId=${classCode}&teacherId=${username}`;
         } else {
             const errorData = await response.json();
             alert(`儲存失敗: ${errorData.message}`);
@@ -178,8 +179,9 @@ async function saveChanges() {
 
 function cancelEdit() {
     const classCode = new URLSearchParams(window.location.search).get('classId');
+    const username = getStudentIdFromUrl();
     if (confirm('確定取消編輯嗎？')) {
-        window.location.href = `solo_class_info.html?classId=${classCode}`;
+        window.location.href = `solo_class_info.html?classId=${classCode}&teacherId=${username}`;
     }
 }
 
